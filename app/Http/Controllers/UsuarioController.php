@@ -44,4 +44,14 @@ class UsuarioController extends Controller
 
         return response()->json(['message' => 'Senha atualizado com sucesso!']);
     }
+
+    public function login($email, $senha)
+    {
+        $usuario = Usuario::findOrFail($email);
+        if (Hash::check($senha, $usuario->senha)) {
+            return response()->json(['message' => 'Login bem-sucedido!']);
+        } else {
+            return response()->json(['message' => 'Credenciais inválidas!'], 401);
+        }
+    }
 }
