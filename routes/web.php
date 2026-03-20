@@ -6,5 +6,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/users/login/{id}', 'UserController@login');
+Route::post('/users/login/{id}', 'UserController@login');
 Route::post('/users/cadastro', 'UserController@cadastro');
+Route::post('/users/atualizar/{id}', 'UserController@atualizar');

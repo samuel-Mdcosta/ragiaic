@@ -3,12 +3,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Service\UsuarioService;
 use Illuminate\Http\Request;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Hash;
 
 class UsuarioController extends Controller
 {
+
+
+    protected $usuarioService;
+
+    public function __construct(UsuarioService $usuarioService)
+    {
+        $this->usuarioService = $usuarioService;
+    }
+
+
 
 
     public function cadastro(Request $request)
@@ -28,30 +39,25 @@ class UsuarioController extends Controller
         return response()->json(['message' => 'Usuário cadastrado com sucesso!'], 201);
     }
 
-    public function atualizar(Request $request, $id)
+
+    public function login(Request $request)
     {
-        $usuario = Usuario::findOrFail($id);
 
-        $request->validate([
-            'senha' => 'sometimes|required|min:6'
-        ]);
+        return $this->usuarioService->loginAuth($request->email, $request->senha);
 
-        if ($request->has('senha')) {
-            $usuario->senha = Hash::make($request->senha);
-        }
-
-        $usuario->save();
-
-        return response()->json(['message' => 'Senha atualizado com sucesso!']);
-    }
-
-    public function login($email, $senha)
-    {
-        $usuario = Usuario::findOrFail($email);
-        if (Hash::check($senha, $usuario->senha)) {
-            return response()->json(['message' => 'Login bem-sucedido!']);
-        } else {
+        if (!$usuario || !Hash::check($request->senha, $usuario->senha)) {
             return response()->json(['message' => 'Credenciais inválidas!'], 401);
         }
+
+        return response()->json(['message' => 'Login realizado com sucesso!']);
+    }
+
+    public function atualizar(Request $request, $id)
+    {
+        $request->validate([
+            'novaSenha' => 'required|min:6'
+        ]);
+
+        return $this->usuarioService->atualizarSenha($id, $request->novaSenha);
     }
 }
