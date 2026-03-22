@@ -47,13 +47,23 @@ class UsuarioController extends Controller
             return response()->json(['message' => 'Credenciais inválidas!'], 401);
         }
 
-        return response()->json(['message' => 'Login realizado com sucesso!']);
+        $token = $usuario->createToken('token-de-acesso')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login realizado com sucesso!',
+            'token' => $token,
+            'usuario' => $usuario
+        ]);
     }
-    public function atualizar(Request $request, $id)
+
+    public function atualizar(Request $request)
     {
         $request->validate([
             'novaSenha' => 'required|min:6'
         ]);
+
+        $usuarioLogado = $request->user();
+        $id = $usuarioLogado->id;
 
         return $this->usuarioService->atualizarSenha($id, $request->novaSenha);
     }

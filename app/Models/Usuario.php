@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Sanctum\HasApiTokens;
 
 class Usuario extends Model
 {
-    protected $table = 'usuarios';
+    use HasApiTokens;
 
+    protected $table = 'usuarios';
     public $timestamps = false;
 
     protected $fillable = [
@@ -15,7 +17,6 @@ class Usuario extends Model
         'email',
         'senha'
     ];
-
 
     protected $hidden = [
         'senha',

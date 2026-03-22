@@ -11,6 +11,7 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^12.0",
+        "laravel/sanctum": "^4.3",
         "laravel/tinker": "^2.10.1"
     },
     "require-dev": {
@@ -77,6 +78,9 @@
         }
     },
     "config": {
+        "audit": {
+            "ignore": ["PKSA-21fb-n1x5-5nf7"]
+        },
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,

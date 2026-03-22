@@ -10,4 +10,4 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/users/login', [UsuarioController::class, 'login']);
 Route::post('/users/cadastro', [UsuarioController::class, 'cadastro']);
-Route::post('/users/atualizar', [UsuarioController::class, 'atualizar']);
+Route::post('/users/atualizar', [UsuarioController::class, 'atualizar'])->middleware('auth:sanctum');
