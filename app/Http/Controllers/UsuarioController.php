@@ -1,9 +1,8 @@
-
-<?
+<?php
 
 namespace App\Http\Controllers;
 
-use App\Service\UsuarioService;
+use App\Providers\UsuarioService;
 use Illuminate\Http\Request;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Hash;
@@ -42,16 +41,14 @@ class UsuarioController extends Controller
 
     public function login(Request $request)
     {
+        $usuario = $this->usuarioService->loginAuth($request->email, $request->senha);
 
-        return $this->usuarioService->loginAuth($request->email, $request->senha);
-
-        if (!$usuario || !Hash::check($request->senha, $usuario->senha)) {
+        if (!$usuario) {
             return response()->json(['message' => 'Credenciais inválidas!'], 401);
         }
 
         return response()->json(['message' => 'Login realizado com sucesso!']);
     }
-
     public function atualizar(Request $request, $id)
     {
         $request->validate([
