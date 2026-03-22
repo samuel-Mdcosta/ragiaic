@@ -12,10 +12,10 @@ return new class extends Migration
         Schema::create('parametros_chat', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('usuario_id')->constrained('usuarios')->onDelete('cascade');
+            $table->foreignId('usuario_id')->constrained('usuarios')->onDelete('cascade')->index();
 
-            $table->boolean('usoChat');
-            $table->integer('tempoUsoChat'); #em minutos
+            $table->boolean('usoChat')->default(true);
+            $table->integer('tempoUsoChat');
 
             $table->timestamps();
         });

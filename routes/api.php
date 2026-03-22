@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\tentativasController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,3 +18,8 @@ Route::post('/users/atualizar', [UsuarioController::class, 'atualizar'])->middle
 
 #tentativasController
 Route::post('/users/login/tentativas', [tentativasController::class, 'salvarTentaivas'])->middleware('auth:sanctum');
+
+#chatController
+Route::post('users/login/salvarUsoChat', [ChatController::class, 'salvarUsoChat'])->middleware('auth:sanctum');
+Route::get('users/login/quantUsoChat', [ChatController::class, 'quantUsoChat'])->middleware('auth:sanctum');
+Route::get('users/login/tempoUsoChat', [ChatController::class, 'tempoUsoChat'])->middleware('auth:sanctum');
