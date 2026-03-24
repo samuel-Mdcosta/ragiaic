@@ -18,11 +18,11 @@ Route::post('/users/atualizar', [UsuarioController::class, 'atualizar'])->middle
 
 #tentativasController
 Route::post('/users/login/tentativas', [tentativasController::class, 'salvarTentaivas'])->middleware('auth:sanctum');
-Route::post('/users/login/requestPerguntas', [tentativasController::class, 'requestPerguntas'])->middleware('auth:sanctum');
-Route::get('/users/login/quantTentativas', [tentativasController::class, 'quantTentativas'])->middleware('auth:sanctum');
+Route::post('/users/login/tentativas/perguntas', [tentativasController::class, 'requestPerguntas'])->middleware('auth:sanctum');
+Route::get('/users/login/tentativas/quantidade', [tentativasController::class, 'quantTentativas'])->middleware('auth:sanctum');
 
 #chatController
-Route::post('users/login/salvarUsoChat', [ChatController::class, 'salvarUsoChat'])->middleware('auth:sanctum');
-Route::post('users/login/requestChat', [ChatController::class, 'requestChat'])->middleware('auth:sanctum');
-Route::get('users/login/quantUsoChat', [ChatController::class, 'quantUsoChat'])->middleware('auth:sanctum');
-Route::get('users/login/tempoUsoChat', [ChatController::class, 'tempoUsoChat'])->middleware('auth:sanctum');
+Route::post('users/login/chat/salvarUso', [ChatController::class, 'salvarUsoChat'])->middleware('auth:sanctum');
+Route::post('users/login/chat/mensagem', [ChatController::class, 'requestChat'])->middleware('auth:sanctum');
+Route::get('users/login/chat/quantidade', [ChatController::class, 'quantUsoChat'])->middleware('auth:sanctum');
+Route::get('users/login/chat/tempo', [ChatController::class, 'tempoUsoChat'])->middleware('auth:sanctum');
