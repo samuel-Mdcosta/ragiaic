@@ -20,4 +20,9 @@ class TentativaService
             'erros'            => $dados['erros'],
         ]);
     }
+
+    public function calcularQuantTentativas(int $usuarioId)
+    {
+        return TentativaQuizz::where('usuario_id', $usuarioId)->count();
+    }
 }

@@ -33,6 +33,17 @@ class TentativasController extends Controller
         ], 201);
     }
 
+    public function quantTentativas(Request $request)
+    {
+        $usuarioId = $request->user()->id;
+
+        $quantTentativas = $this->tentativaService->calcularQuantTentativas($usuarioId);
+
+        return response()->json([
+            'quantTentativas' => $quantTentativas
+        ]);
+    }
+
     public function requestPerguntas(Request $request)
     {
 
