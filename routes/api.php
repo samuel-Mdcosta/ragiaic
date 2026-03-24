@@ -22,5 +22,6 @@ Route::post('/users/login/requestPerguntas', [tentativasController::class, 'requ
 
 #chatController
 Route::post('users/login/salvarUsoChat', [ChatController::class, 'salvarUsoChat'])->middleware('auth:sanctum');
+Route::post('users/login/requestChat', [ChatController::class, 'requestChat'])->middleware('auth:sanctum');
 Route::get('users/login/quantUsoChat', [ChatController::class, 'quantUsoChat'])->middleware('auth:sanctum');
 Route::get('users/login/tempoUsoChat', [ChatController::class, 'tempoUsoChat'])->middleware('auth:sanctum');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Providers\ChatService;
+use Illuminate\support\facades\Http;
 use Illuminate\Http\Request;
 
 class ChatController extends Controller
@@ -48,5 +49,24 @@ class ChatController extends Controller
         return response()->json([
             'quantUso' => $quantUso
         ]);
+    }
+
+    public function requestChat(Request $request)
+    {
+        $request->validate([
+            'pergunta' => 'required|string|max:255'
+        ]);
+
+        $response = Http::post('#url da api do chat#', [
+            'pergunta' => $request->input('pergunta')
+        ]);
+
+        if ($response->failed()) {
+            return response()->json([
+                'message' => 'Erro ao obter resposta do chat. Tente novamente mais tarde.'
+            ], 500);
+        }
+
+        return response()->json($response->json());
     }
 }
