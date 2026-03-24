@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Providers\TentativaService;
+use Illuminate\support\facades\Http;
 use Illuminate\Http\Request;
 
 class TentativasController extends Controller
@@ -30,5 +31,25 @@ class TentativasController extends Controller
             'message'   => 'Tentativa salva com sucesso!',
             'tentativa' => $tentativa
         ], 201);
+    }
+
+    public function requestPerguntas(Request $request)
+    {
+
+        $request->validate([
+            'tema' => 'required|string|max:255'
+        ]);
+
+        $response = Http::post('#url da api das perguntas#', [
+            'tema' => $request->input('tema')
+        ]);
+
+        if ($response->failed()) {
+            return response()->json([
+                'message' => 'Erro ao obter perguntas. Tente novamente mais tarde.'
+            ], 500);
+        }
+
+        return response()->json($response->json());
     }
 }
