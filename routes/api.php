@@ -15,6 +15,7 @@ Route::get('/user', function (Request $request) {
 Route::post('/users/login', [UsuarioController::class, 'login']);
 Route::post('/users/cadastro', [UsuarioController::class, 'cadastro']);
 Route::post('/users/atualizar', [UsuarioController::class, 'atualizar'])->middleware('auth:sanctum');
+Route::post('/users/logout', [UsuarioController::class, 'logout'])->middleware('auth:sanctum');
 
 #tentativasController
 Route::post('/users/login/tentativas', [tentativasController::class, 'registrarTentativa'])->middleware('auth:sanctum');
