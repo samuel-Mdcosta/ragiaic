@@ -17,7 +17,7 @@ Route::post('/users/cadastro', [UsuarioController::class, 'cadastro']);
 Route::post('/users/atualizar', [UsuarioController::class, 'atualizar'])->middleware('auth:sanctum');
 
 #tentativasController
-Route::post('/users/login/tentativas', [tentativasController::class, 'salvarTentaivas'])->middleware('auth:sanctum');
+Route::post('/users/login/tentativas', [tentativasController::class, 'registrarTentativa'])->middleware('auth:sanctum');
 Route::post('/users/login/tentativas/perguntas', [tentativasController::class, 'requestPerguntas'])->middleware('auth:sanctum');
 Route::get('/users/login/tentativas/quantidade', [tentativasController::class, 'quantTentativas'])->middleware('auth:sanctum');
 

@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Service\UsuarioService;
+use App\Providers\UsuarioService;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Hash;
 

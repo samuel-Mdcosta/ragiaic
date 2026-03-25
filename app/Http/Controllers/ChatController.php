@@ -44,10 +44,10 @@ class ChatController extends Controller
     {
         $usuarioId = $request->user()->id;
 
-        $quantUso = $this->chatService->calcularQuantUsoChat($usuarioId);
+        $tempoTotal = $this->chatService->calcularTempoTotalUsoChat($usuarioId);
 
         return response()->json([
-            'quantUso' => $quantUso
+            'tempoTotalUso' => $tempoTotal
         ]);
     }
 
