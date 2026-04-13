@@ -44,6 +44,15 @@ class TentativasController extends Controller
         ]);
     }
 
+    public function stats(Request $request)
+    {
+        $usuarioId = $request->user()->id;
+
+        $stats = $this->tentativaService->calcularStats($usuarioId);
+
+        return response()->json($stats);
+    }
+
     public function requestPerguntas(Request $request)
     {
 

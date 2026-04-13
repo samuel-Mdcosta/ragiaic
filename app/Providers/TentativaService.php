@@ -25,4 +25,24 @@ class TentativaService
     {
         return TentativaQuizz::where('usuario_id', $usuarioId)->count();
     }
+
+    public function calcularStats(int $usuarioId): array
+    {
+        $totais = TentativaQuizz::where('usuario_id', $usuarioId)
+            ->selectRaw('SUM(acertos) as totalAcertos, SUM(erros) as totalErros')
+            ->first();
+
+        $totalAcertos = (int) $totais->totalAcertos;
+        $totalErros   = (int) $totais->totalErros;
+        $questoesRespondidas = $totalAcertos + $totalErros;
+
+        $taxaAcerto = $questoesRespondidas > 0
+            ? round(($totalAcertos / $questoesRespondidas) * 100)
+            : 0;
+
+        return [
+            'questoesRespondidas' => $questoesRespondidas,
+            'taxaAcerto'          => $taxaAcerto,
+        ];
+    }
 }

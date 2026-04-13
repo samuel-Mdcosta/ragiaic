@@ -23,6 +23,7 @@ Route::post('/users/logout', [UsuarioController::class, 'logout'])->middleware('
 Route::post('/users/login/tentativas', [tentativasController::class, 'registrarTentativa'])->middleware('auth:sanctum');
 Route::post('/users/login/tentativas/perguntas', [tentativasController::class, 'requestPerguntas'])->middleware('auth:sanctum');
 Route::get('/users/login/tentativas/quantidade', [tentativasController::class, 'quantTentativas'])->middleware('auth:sanctum');
+Route::get('/users/login/tentativas/stats', [tentativasController::class, 'stats'])->middleware('auth:sanctum');
 
 #chatController
 Route::post('users/login/chat/salvarUso', [ChatController::class, 'salvarUsoChat'])->middleware('auth:sanctum');
