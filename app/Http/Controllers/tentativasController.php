@@ -15,7 +15,7 @@ class TentativasController extends Controller
         $this->tentativaService = $tentativaService;
     }
 
-    public function salvarTentativas(Request $request)
+    public function registrarTentativa(Request $request)
     {
         $dadosValidados = $request->validate([
             'conteudoAcessado' => 'required|string|max:255',
