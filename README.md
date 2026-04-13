@@ -1,59 +1,251 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# 🧠 RagiaIC — AI Learning Platform Backend
 
-## About Laravel
+> **REST API backend for an AI-powered neuroscience learning platform**, built as part of a university research group (Iniciação Científica). Orchestrates requests between the frontend, an LLM-based chat assistant, and an intelligent quiz engine — while tracking student engagement and performance over time.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+[![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?style=flat&logo=php&logoColor=white)](https://php.net)
+[![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com)
+[![Sanctum](https://img.shields.io/badge/Auth-Laravel_Sanctum-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com/docs/sanctum)
+[![SQLite](https://img.shields.io/badge/Database-SQLite-003B57?style=flat&logo=sqlite&logoColor=white)](https://sqlite.org)
+[![Tailwind](https://img.shields.io/badge/CSS-Tailwind_v4-06B6D4?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## What it does
 
-## Learning Laravel
+University students studying neuroscience need more than static PDFs — they need active recall, personalized feedback, and access to an AI tutor when professors aren't available. RagiaIC is the backend that powers all of that:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- **AI chat proxy** — routes student questions to an external LLM and tracks usage time per session
+- **Intelligent quiz engine** — proxies dynamically generated questions from an AI API and records every attempt (correct answers, mistakes, content accessed)
+- **Engagement analytics** — exposes aggregated stats per user (total chat sessions, accumulated time, quiz attempts) to generate faculty reports
+- **Secure auth** — token-based authentication via Laravel Sanctum, with role-aware route protection
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+The system was designed to produce data that feeds **analytical reports for the teaching staff**, enabling evidence-based decisions about student performance and content gaps.
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Architecture
 
-### Premium Partners
+```
+Frontend (React)
+      │
+      ▼
+┌─────────────────────────────────────────┐
+│              Laravel 12 API             │
+│                                         │
+│  ┌──────────────┐  ┌──────────────────┐ │
+│  │  Auth module │  │   Chat module    │ │
+│  │  (Sanctum)   │  │  proxy + tracker │ │
+│  └──────────────┘  └──────────────────┘ │
+│                                         │
+│  ┌──────────────────────────────────┐   │
+│  │          Quiz module             │   │
+│  │  proxy + attempt recorder        │   │
+│  └──────────────────────────────────┘   │
+│                                         │
+│  Controller → Service → Model (Eloquent)│
+└───────────┬─────────────────────────────┘
+            │
+            ▼
+       SQLite database
+  (usuarios, parametro_chats,
+   tentativa_quizzs, personal_access_tokens)
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+**Design pattern:** every module follows `Controller → Service → Model`. Controllers handle HTTP concerns only (validation, response format). Business logic lives exclusively in Services (`app/Providers/`). Models are thin Eloquent wrappers.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Modules & API reference
 
-## Code of Conduct
+All protected routes require: `Authorization: Bearer {token}`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Authentication — `UsuarioController`
 
-## Security Vulnerabilities
+| Method | Route | Auth | Description |
+|--------|-------|------|-------------|
+| POST | `/api/users/login` | No | Login → returns Sanctum token |
+| POST | `/api/users/cadastro` | No | Register new student account |
+| POST | `/api/users/atualizar` | Yes | Update password |
+| POST | `/api/users/logout` | Yes | Revoke current token |
+| GET | `/api/user` | Yes | Return authenticated user data |
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Chat (AI Tutor) — `ChatController`
 
-## License
+| Method | Route | Auth | Description |
+|--------|-------|------|-------------|
+| POST | `/api/users/login/chat/mensagem` | Yes | Proxy message to external LLM API |
+| POST | `/api/users/login/chat/salvarUso` | Yes | Record session usage (duration in seconds) |
+| GET | `/api/users/login/chat/quantidade` | Yes | Total chat sessions for user |
+| GET | `/api/users/login/chat/tempo` | Yes | Total accumulated usage time |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Quiz & Attempts — `tentativasController`
+
+| Method | Route | Auth | Description |
+|--------|-------|------|-------------|
+| POST | `/api/users/login/tentativas/perguntas` | Yes | Proxy to external AI quiz-generation API |
+| POST | `/api/users/login/tentativas` | Yes | Record quiz attempt (hits, errors, content) |
+| GET | `/api/users/login/tentativas/quantidade` | Yes | Total attempts for user |
+
+---
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Laravel 12 (PHP 8.2) |
+| Authentication | Laravel Sanctum (token-based) |
+| ORM | Eloquent |
+| Database | SQLite |
+| Frontend assets | Vite + Tailwind CSS v4 |
+| Architecture | REST API — Controller → Service → Model |
+
+---
+
+## Project structure
+
+```
+ragiaic/
+├── app/
+│   ├── Http/Controllers/
+│   │   ├── UsuarioController.php    # Auth endpoints
+│   │   ├── ChatController.php       # Chat proxy + usage tracking
+│   │   └── tentativasController.php # Quiz proxy + attempt recording
+│   ├── Models/
+│   │   ├── Usuario.php              # Custom user model (HasApiTokens)
+│   │   ├── parametroChat.php        # Chat usage record
+│   │   └── TentativaQuizz.php       # Quiz attempt record
+│   └── Providers/                   # Services (business logic layer)
+│       ├── UsuarioService.php
+│       ├── ChatService.php
+│       └── TentativaService.php
+├── database/
+│   └── migrations/                  # usuarios, parametro_chats, tentativa_quizzs
+├── routes/
+│   └── api.php                      # All API route definitions
+└── CLAUDE.md
+```
+
+---
+
+## Getting started
+
+### Prerequisites
+
+- PHP 8.2+
+- Composer
+- Node.js 18+ (for frontend assets)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/samuel-Mdcosta/ragiaic.git
+cd ragiaic
+
+# Install PHP dependencies
+composer install
+
+# Install JS dependencies
+npm install
+
+# Configure environment
+cp .env.example .env
+php artisan key:generate
+```
+
+### Environment variables
+
+Edit `.env` with your settings:
+
+```env
+APP_NAME=RagiaIC
+APP_ENV=local
+APP_KEY=        # generated by artisan key:generate
+APP_URL=http://localhost
+
+DB_CONNECTION=sqlite
+# database/database.sqlite is created automatically
+
+# External AI API endpoints (chat and quiz)
+CHAT_API_URL=your_llm_api_endpoint
+QUIZ_API_URL=your_quiz_generation_endpoint
+```
+
+### Running
+
+```bash
+# Run database migrations
+php artisan migrate
+
+# Start development server
+php artisan serve
+```
+
+API available at `http://localhost:8000`. Interactive API docs if using a tool like Scribe or Swagger can be configured separately.
+
+### Build frontend assets
+
+```bash
+npm run dev   # development with HMR
+npm run build # production build
+```
+
+---
+
+## Response format
+
+All endpoints return consistent JSON:
+
+```json
+// Success with resource creation (201)
+{ "message": "...", "dado": { } }
+
+// Success (200)
+{ "message": "..." }
+
+// Error (4xx / 5xx)
+{ "message": "..." }
+```
+
+---
+
+## Database schema
+
+```
+usuarios
+  id, nome, email, senha (hashed), created_at
+
+parametro_chats
+  id, usuario_id → usuarios, usoChat (bool), tempoUsoChat (int, seconds)
+
+tentativa_quizzs
+  id, usuario_id → usuarios, conteudoAcessado, acertos (int), erros (int)
+
+personal_access_tokens
+  (standard Laravel Sanctum table)
+```
+
+---
+
+## Context
+
+This backend was built as part of a **research group at Universidade Uniderp**, collaborating with a master's student to develop AI-assisted tools for neuroscience education. The platform uses a RAG (Retrieval-Augmented Generation) pipeline to ground the AI tutor in curated academic content, generating vector embeddings from PDFs for high-precision information retrieval.
+
+This repository contains the **Laravel orchestration layer** — the component that ties together user management, AI service proxying, and engagement data persistence.
+
+---
+
+## Related repositories
+
+- **Frontend:** [github.com/samuel-Mdcosta/Iniciacao-Cientifica_Tutor_Virtual-main](https://github.com/samuel-Mdcosta/Iniciacao-Cientifica_Tutor_Virtual-main)
+
+---
+
+## Author
+
+**Samuel M. Costa** — Backend Developer | AI & LLMs
+
+- LinkedIn: [linkedin.com/in/samuelmdcosta](https://linkedin.com/in/samuelmdcosta)
+- Email: costadev19@gmail.com
+- GitHub: [github.com/samuel-Mdcosta](https://github.com/samuel-Mdcosta)
