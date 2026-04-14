@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Providers\TentativaService;
-use Illuminate\support\facades\Http;
 use Illuminate\Http\Request;
+use Illuminate\support\facades\Http;
 
 class TentativasController extends Controller
 {
@@ -19,8 +19,8 @@ class TentativasController extends Controller
     {
         $dadosValidados = $request->validate([
             'conteudoAcessado' => 'required|string|max:255',
-            'acertos'          => 'required|integer',
-            'erros'            => 'required|integer',
+            'acertos' => 'required|integer',
+            'erros' => 'required|integer',
         ]);
 
         $usuarioId = $request->user()->id;
@@ -28,8 +28,8 @@ class TentativasController extends Controller
         $tentativa = $this->tentativaService->registrarTentativa($usuarioId, $dadosValidados);
 
         return response()->json([
-            'message'   => 'Tentativa salva com sucesso!',
-            'tentativa' => $tentativa
+            'message' => 'Tentativa salva com sucesso!',
+            'tentativa' => $tentativa,
         ], 201);
     }
 
@@ -40,7 +40,7 @@ class TentativasController extends Controller
         $quantTentativas = $this->tentativaService->calcularQuantTentativas($usuarioId);
 
         return response()->json([
-            'quantTentativas' => $quantTentativas
+            'quantTentativas' => $quantTentativas,
         ]);
     }
 
@@ -57,16 +57,16 @@ class TentativasController extends Controller
     {
 
         $request->validate([
-            'tema' => 'required|string|max:255'
+            'tema' => 'required|string|max:255',
         ]);
 
-        $response = Http::post('#url da api das perguntas#', [
-            'texto' => $request->input('tema')
+        $response = Http::post('https://iniciacao-cientifica-tutor-virtual-main.onrender.com/quizz', [
+            'texto' => $request->input('tema'),
         ]);
 
         if ($response->failed()) {
             return response()->json([
-                'message' => 'Erro ao obter perguntas. Tente novamente mais tarde.'
+                'message' => 'Erro ao obter perguntas. Tente novamente mais tarde.',
             ], 500);
         }
 

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Providers\ChatService;
-use Illuminate\support\facades\Http;
 use Illuminate\Http\Request;
+use Illuminate\support\facades\Http;
 
 class ChatController extends Controller
 {
@@ -23,9 +23,10 @@ class ChatController extends Controller
 
         $usuarioId = $request->user()->id;
         $usoChat = $this->chatService->RegistrarUsoChat($usuarioId, $dadosValidados['tempoUsoChat']);
+
         return response()->json([
             'message' => 'Uso do chat registrado com sucesso!',
-            'usoChat' => $usoChat
+            'usoChat' => $usoChat,
         ], 201);
     }
 
@@ -36,7 +37,7 @@ class ChatController extends Controller
         $quantUso = $this->chatService->calcularQuantUsoChat($usuarioId);
 
         return response()->json([
-            'quantUso' => $quantUso
+            'quantUso' => $quantUso,
         ]);
     }
 
@@ -47,23 +48,23 @@ class ChatController extends Controller
         $tempoTotal = $this->chatService->calcularTempoTotalUsoChat($usuarioId);
 
         return response()->json([
-            'tempoTotalUso' => $tempoTotal
+            'tempoTotalUso' => $tempoTotal,
         ]);
     }
 
     public function requestChat(Request $request)
     {
         $request->validate([
-            'pergunta' => 'required|string|max:2000'
+            'pergunta' => 'required|string|max:2000',
         ]);
 
-        $response = Http::post('#url da api do chat#', [
-            'texto' => $request->input('pergunta')
+        $response = Http::post('https://iniciacao-cientifica-tutor-virtual-main.onrender.com/llm', [
+            'texto' => $request->input('pergunta'),
         ]);
 
         if ($response->failed()) {
             return response()->json([
-                'message' => 'Erro ao obter resposta do chat. Tente novamente mais tarde.'
+                'message' => 'Erro ao obter resposta do chat. Tente novamente mais tarde.',
             ], 500);
         }
 
