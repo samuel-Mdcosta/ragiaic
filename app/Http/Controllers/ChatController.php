@@ -58,7 +58,7 @@ class ChatController extends Controller
         ]);
 
         $response = Http::post('#url da api do chat#', [
-            'pergunta' => $request->input('pergunta')
+            'texto' => $request->input('pergunta')
         ]);
 
         if ($response->failed()) {
