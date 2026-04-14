@@ -41,7 +41,7 @@ class TentativasController extends Controller
         $quantTentativas = $this->tentativaService->calcularQuantTentativas($usuarioId);
 
         return response()->json([
-            'quantTentativas' => $quantTentativas,
+            'quantidade' => $quantTentativas,
         ]);
     }
 
