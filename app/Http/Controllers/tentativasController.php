@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Providers\TentativaService;
-use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
-use Illuminate\support\facades\Http;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class TentativasController extends Controller
 {
