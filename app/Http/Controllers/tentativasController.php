@@ -61,7 +61,7 @@ class TentativasController extends Controller
         ]);
 
         $response = Http::post('#url da api das perguntas#', [
-            'tema' => $request->input('tema')
+            'texto' => $request->input('tema')
         ]);
 
         if ($response->failed()) {

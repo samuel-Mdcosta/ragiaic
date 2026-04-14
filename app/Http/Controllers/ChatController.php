@@ -54,7 +54,7 @@ class ChatController extends Controller
     public function requestChat(Request $request)
     {
         $request->validate([
-            'pergunta' => 'required|string|max:255'
+            'pergunta' => 'required|string|max:2000'
         ]);
 
         $response = Http::post('#url da api do chat#', [
