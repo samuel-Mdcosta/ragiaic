@@ -21,7 +21,7 @@ return [
 
     'allowed_origins' => ['https://iaicrag.vercel.app'],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => ['#^https://iaicrag.*\.vercel\.app$#'],
 
     'allowed_headers' => ['*'],
 
