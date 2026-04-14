@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'], # o link do front sera incluido aqui
+    'allowed_origins' => ['https://iaicrag.vercel.app/'], // o link do front sera incluido aqui
 
     'allowed_origins_patterns' => [],
 
