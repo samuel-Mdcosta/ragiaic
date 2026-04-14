@@ -25,16 +25,9 @@ RUN composer install --no-dev --optimize-autoloader
 # Instala dependências Node e gera assets
 RUN npm install && npm run build
 
-# Configura Apache: document root aponta para /public
-RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' \
-    /etc/apache2/sites-enabled/000-default.conf
-
-# Habilita mod_rewrite (necessário para rotas do Laravel)
+# Configura Apache
+COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
 RUN a2enmod rewrite
-
-# Ajusta AllowOverride para o .htaccess funcionar
-RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' \
-    /etc/apache2/apache2.conf
 
 # Permissões de escrita para o Laravel
 RUN chown -R www-data:www-data storage bootstrap/cache \
