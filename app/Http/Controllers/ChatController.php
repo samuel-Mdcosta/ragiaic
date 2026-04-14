@@ -38,7 +38,7 @@ class ChatController extends Controller
         $quantUso = $this->chatService->calcularQuantUsoChat($usuarioId);
 
         return response()->json([
-            'quantUso' => $quantUso,
+            'quantidade' => $quantUso,
         ]);
     }
 
