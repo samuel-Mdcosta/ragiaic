@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Providers\ChatService;
 use Illuminate\Http\Request;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\support\facades\Http;
 
 class ChatController extends Controller
@@ -58,9 +59,15 @@ class ChatController extends Controller
             'pergunta' => 'required|string|max:2000',
         ]);
 
-        $response = Http::post('https://iniciacao-cientifica-tutor-virtual-main.onrender.com/llm', [
-            'texto' => $request->input('pergunta'),
-        ]);
+        try {
+            $response = Http::timeout(60)->post('https://iniciacao-cientifica-tutor-virtual-main.onrender.com/llm', [
+                'texto' => $request->input('pergunta'),
+            ]);
+        } catch (ConnectionException $e) {
+            return response()->json([
+                'message' => 'Não foi possível conectar ao serviço de IA. Tente novamente mais tarde.',
+            ], 503);
+        }
 
         if ($response->failed()) {
             return response()->json([

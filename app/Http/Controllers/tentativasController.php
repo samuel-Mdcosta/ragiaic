@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Providers\TentativaService;
 use Illuminate\Http\Request;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\support\facades\Http;
 
 class TentativasController extends Controller
@@ -55,14 +56,19 @@ class TentativasController extends Controller
 
     public function requestPerguntas(Request $request)
     {
-
         $request->validate([
             'tema' => 'required|string|max:255',
         ]);
 
-        $response = Http::post('https://iniciacao-cientifica-tutor-virtual-main.onrender.com/quizz', [
-            'texto' => $request->input('tema'),
-        ]);
+        try {
+            $response = Http::timeout(60)->post('https://iniciacao-cientifica-tutor-virtual-main.onrender.com/quizz', [
+                'texto' => $request->input('tema'),
+            ]);
+        } catch (ConnectionException $e) {
+            return response()->json([
+                'message' => 'Não foi possível conectar ao serviço de perguntas. Tente novamente mais tarde.',
+            ], 503);
+        }
 
         if ($response->failed()) {
             return response()->json([
