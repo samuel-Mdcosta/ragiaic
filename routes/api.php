@@ -4,6 +4,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\tentativasController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SenhaController;
 use App\Http\Controllers\UsuarioController;
 
 #retorna o grupo completo do usuário autenticado: nome, email, id, etc.
@@ -24,6 +25,10 @@ Route::post('/users/login/tentativas', [tentativasController::class, 'registrarT
 Route::post('/users/login/tentativas/perguntas', [tentativasController::class, 'requestPerguntas'])->middleware('auth:sanctum');
 Route::get('/users/login/tentativas/quantidade', [tentativasController::class, 'quantTentativas'])->middleware('auth:sanctum');
 Route::get('/users/login/tentativas/stats', [tentativasController::class, 'stats'])->middleware('auth:sanctum');
+
+#SenhaController
+Route::post('/users/verificarEmail', [SenhaController::class, 'verificarEmail']);
+Route::post('/users/redefinirSenha', [SenhaController::class, 'redefinirSenha']);
 
 #chatController
 Route::post('/users/login/chat/salvarUso', [ChatController::class, 'salvarUsoChat'])->middleware('auth:sanctum');
