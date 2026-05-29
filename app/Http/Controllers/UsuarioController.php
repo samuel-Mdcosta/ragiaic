@@ -51,8 +51,9 @@ class UsuarioController extends Controller
 
         return response()->json([
             'message' => 'Login realizado com sucesso!',
-            'token' => $token,
-            'usuario' => $usuario
+            'token'   => $token,
+            'role'    => $usuario->role,
+            'usuario' => $usuario,
         ]);
     }
 

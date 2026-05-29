@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\tentativasController;
 use Illuminate\Http\Request;
@@ -29,6 +30,9 @@ Route::get('/users/login/tentativas/stats', [tentativasController::class, 'stats
 #SenhaController
 Route::post('/users/verificarEmail', [SenhaController::class, 'verificarEmail']);
 Route::post('/users/redefinirSenha', [SenhaController::class, 'redefinirSenha']);
+
+#AdminController
+Route::get('/admin/alunos', [AdminController::class, 'listarAlunos'])->middleware('auth:sanctum');
 
 #chatController
 Route::post('/users/login/chat/salvarUso', [ChatController::class, 'salvarUsoChat'])->middleware('auth:sanctum');
