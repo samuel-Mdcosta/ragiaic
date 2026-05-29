@@ -20,11 +20,11 @@ class AdminController extends Controller
 
         $dado = $alunos->map(function ($aluno) {
             $chat = parametroChat::where('usuario_id', $aluno->id)
-                ->selectRaw('COUNT(*) as sessoes, SUM(tempoUsoChat) as tempo, MAX(created_at) as ultimo_chat')
+                ->selectRaw('COUNT(*) as sessoes, SUM("tempoUsoChat") as tempo, MAX(created_at) as ultimo_chat')
                 ->first();
 
             $quiz = TentativaQuizz::where('usuario_id', $aluno->id)
-                ->selectRaw('COUNT(*) as tentativas, SUM(acertos) as acertos, SUM(erros) as erros, MAX(created_at) as ultimo_quiz')
+                ->selectRaw('COUNT(*) as tentativas, SUM("acertos") as acertos, SUM(erros) as erros, MAX(created_at) as ultimo_quiz')
                 ->first();
 
             $acertos = (int) $quiz->acertos;
