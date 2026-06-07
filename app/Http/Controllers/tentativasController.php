@@ -6,6 +6,7 @@ use App\Providers\TentativaService;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Validation\Rule;
 
 class TentativasController extends Controller
 {
@@ -57,7 +58,7 @@ class TentativasController extends Controller
     public function requestPerguntas(Request $request)
     {
         $request->validate([
-            'tema' => 'required|string|max:255',
+            'tema' => ['required', 'string', Rule::in(config('temas.quiz'))],
         ]);
 
         try {
