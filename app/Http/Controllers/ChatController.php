@@ -19,7 +19,7 @@ class ChatController extends Controller
     public function salvarUsoChat(Request $request)
     {
         $dadosValidados = $request->validate([
-            'tempoUsoChat' => 'required|integer',
+            'tempoUsoChat' => 'required|integer|min:1',
         ]);
 
         $usuarioId = $request->user()->id;
