@@ -69,6 +69,25 @@ class UsuarioController extends Controller
         return $this->usuarioService->atualizarSenha($id, $request->novaSenha);
     }
 
+    public function atualizarPerfil(Request $request)
+    {
+        $dados = $request->validate([
+            // 'sometimes' = só valida/atualiza o campo quando ele é enviado.
+            'nome' => 'sometimes|required|string|min:3',
+            // foto vai como data URL (base64) ou null para remover.
+            'foto' => 'sometimes|nullable|string',
+        ]);
+
+        $id = $request->user()->id;
+
+        $usuario = $this->usuarioService->atualizarPerfil($id, $dados);
+
+        return response()->json([
+            'message' => 'Perfil atualizado com sucesso!',
+            'usuario' => $usuario,
+        ]);
+    }
+
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();

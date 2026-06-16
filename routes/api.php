@@ -19,6 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('/users/login', [UsuarioController::class, 'login']);
 Route::post('/users/cadastro', [UsuarioController::class, 'cadastro']);
 Route::post('/users/atualizar', [UsuarioController::class, 'atualizar'])->middleware('auth:sanctum');
+Route::post('/users/atualizarPerfil', [UsuarioController::class, 'atualizarPerfil'])->middleware('auth:sanctum');
 Route::post('/users/logout', [UsuarioController::class, 'logout'])->middleware('auth:sanctum');
 
 #tentativasController

@@ -25,4 +25,21 @@ class UsuarioService
         $usuario->save();
         return $usuario;
     }
+
+    // Atualiza apenas os campos enviados (nome e/ou foto).
+    public function atualizarPerfil($id, array $dados)
+    {
+        $usuario = Usuario::findOrFail($id);
+
+        if (array_key_exists('nome', $dados)) {
+            $usuario->nome = $dados['nome'];
+        }
+
+        if (array_key_exists('foto', $dados)) {
+            $usuario->foto = $dados['foto'];
+        }
+
+        $usuario->save();
+        return $usuario;
+    }
 }
