@@ -34,6 +34,7 @@ Route::post('/users/redefinirSenha', [SenhaController::class, 'redefinirSenha'])
 
 #AdminController
 Route::get('/admin/alunos', [AdminController::class, 'listarAlunos'])->middleware('auth:sanctum');
+Route::get('/admin/alunos/{id}/temas', [AdminController::class, 'listarTemasAluno'])->middleware('auth:sanctum');
 
 #chatController
 Route::post('/users/login/chat/salvarUso', [ChatController::class, 'salvarUsoChat'])->middleware('auth:sanctum');

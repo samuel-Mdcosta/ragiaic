@@ -61,4 +61,42 @@ class AdminController extends Controller
             'dado'    => $dado,
         ]);
     }
+
+    public function listarTemasAluno(Request $request, $id)
+    {
+        if ($request->user()->role !== 'admin') {
+            return response()->json(['message' => 'Acesso negado.'], 403);
+        }
+
+        $aluno = Usuario::find($id);
+        if (!$aluno) {
+            return response()->json(['message' => 'Aluno não encontrado.'], 404);
+        }
+
+        $temas = TentativaQuizz::where('usuario_id', $id)
+            ->groupBy('conteudoAcessado')
+            ->selectRaw('"conteudoAcessado" as tema, COUNT(*) as tentativas, SUM("acertos") as acertos, SUM(erros) as erros, MAX(created_at) as ultimo_acesso')
+            ->get();
+
+        $dado = $temas->map(function ($t) {
+            $acertos = (int) $t->acertos;
+            $erros   = (int) $t->erros;
+            $total   = $acertos + $erros;
+            $taxaAcerto = $total > 0 ? round(($acertos / $total) * 100, 1) : 0;
+
+            return [
+                'tema'          => $t->tema,
+                'tentativas'    => (int) $t->tentativas,
+                'acertos'       => $acertos,
+                'erros'         => $erros,
+                'taxa_acerto'   => $taxaAcerto,
+                'ultimo_acesso' => $t->ultimo_acesso,
+            ];
+        });
+
+        return response()->json([
+            'message' => 'Temas do aluno listados com sucesso',
+            'dado'    => $dado,
+        ]);
+    }
 }
