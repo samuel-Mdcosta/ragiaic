@@ -22,3 +22,8 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Credenciais e backups de .env: só o .env.example vai para o repositório
+.env.*
+!.env.example
+*.bak
