@@ -84,8 +84,17 @@ All protected routes require: `Authorization: Bearer {token}`
 | Method | Route | Auth | Description |
 |--------|-------|------|-------------|
 | POST | `/api/users/login/tentativas/perguntas` | Yes | Proxy to external AI quiz-generation API |
-| POST | `/api/users/login/tentativas` | Yes | Record quiz attempt (hits, errors, content) |
+| POST | `/api/users/login/tentativas` | Yes | Record quiz attempt (hits, errors, content) and, optionally, each answered question (`questoes`: pergunta, subtema, resposta_escolhida, resposta_correta, acertou, referencias) |
 | GET | `/api/users/login/tentativas/quantidade` | Yes | Total attempts for user |
+
+### Performance feedback — `DesempenhoController`
+
+| Method | Route | Auth | Description |
+|--------|-------|------|-------------|
+| GET | `/api/users/login/desempenho` | Yes | Performance per theme: hit rate, recent rate (last 3 attempts), level (`critico` < 50% ≤ `atencao` < 70% ≤ `bom`), trend, themes not practiced yet |
+| GET | `/api/users/login/desempenho/feedback` | Yes | AI feedback about the student's performance: weakest areas, what / why / where to study. Numbers and priority areas are computed here (`DesempenhoService`); the AI engine (`POST /feedback`) only writes the diagnosis. The last feedback is reused until the student finishes a new attempt |
+
+The AI engine URL comes from `TUTOR_IA_URL`, falling back to `PYTHON_SERVICE_URL` and then to the Render deployment. `TUTOR_IA_TIMEOUT` sets the timeout in seconds (default 90). Every call to the engine (`/llm`, `/quizz`, `/feedback`) sends the `X-API-Key` header with `PYTHON_SERVICE_SECRET`, which must match `SHARED_SECRET` in the engine.
 
 ---
 
@@ -221,6 +230,13 @@ parametro_chats
 
 tentativa_quizzs
   id, usuario_id → usuarios, conteudoAcessado, acertos (int), erros (int)
+
+respostas_quiz
+  id, tentativa_id → parametros_quiz, usuario_id → usuarios, tema, subtema,
+  pergunta, resposta_escolhida, resposta_correta, acertou (bool), referencias
+
+feedbacks_desempenho
+  id, usuario_id → usuarios, total_tentativas (cache key), conteudo (json), uso_tokens (json)
 
 personal_access_tokens
   (standard Laravel Sanctum table)

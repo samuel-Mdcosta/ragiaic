@@ -3,22 +3,42 @@
 namespace App\Providers;
 
 use App\Models\TentativaQuizz;
+use Illuminate\Support\Facades\DB;
 
 class TentativaService
 {
     public function registrarTentativa(int $usuarioId, array $dados)
     {
-        $numeroDaTentativa = TentativaQuizz::where('usuario_id', $usuarioId)
-            ->where('conteudoAcessado', $dados['conteudoAcessado'])
-            ->count() + 1;
+        return DB::transaction(function () use ($usuarioId, $dados) {
+            $numeroDaTentativa = TentativaQuizz::where('usuario_id', $usuarioId)
+                ->where('conteudoAcessado', $dados['conteudoAcessado'])
+                ->count() + 1;
 
-        return TentativaQuizz::create([
-            'usuario_id'       => $usuarioId,
-            'conteudoAcessado' => $dados['conteudoAcessado'],
-            'quantTentativas'  => $numeroDaTentativa,
-            'acertos'          => $dados['acertos'],
-            'erros'            => $dados['erros'],
-        ]);
+            $tentativa = TentativaQuizz::create([
+                'usuario_id'       => $usuarioId,
+                'conteudoAcessado' => $dados['conteudoAcessado'],
+                'quantTentativas'  => $numeroDaTentativa,
+                'acertos'          => $dados['acertos'],
+                'erros'            => $dados['erros'],
+            ]);
+
+            // Detalhe por questão (opcional): base do feedback de desempenho por subtema.
+            $questoes = $dados['questoes'] ?? [];
+            if (!empty($questoes)) {
+                $tentativa->respostas()->createMany(array_map(fn (array $questao) => [
+                    'usuario_id'         => $usuarioId,
+                    'tema'               => $dados['conteudoAcessado'],
+                    'subtema'            => $questao['subtema'] ?? null,
+                    'pergunta'           => $questao['pergunta'],
+                    'resposta_escolhida' => $questao['resposta_escolhida'] ?? null,
+                    'resposta_correta'   => $questao['resposta_correta'] ?? null,
+                    'acertou'            => (bool) $questao['acertou'],
+                    'referencias'        => $questao['referencias'] ?? null,
+                ], $questoes));
+            }
+
+            return $tentativa;
+        });
     }
 
     public function calcularQuantTentativas(int $usuarioId)

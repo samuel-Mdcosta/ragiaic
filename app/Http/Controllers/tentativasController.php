@@ -23,6 +23,14 @@ class TentativasController extends Controller
             'conteudoAcessado' => 'required|string|max:255',
             'acertos' => 'required|integer|min:0|max:10',
             'erros' => 'required|integer|min:0|max:10',
+            // Detalhe de cada questão (opcional, mantém compatibilidade com o front antigo).
+            'questoes' => 'sometimes|array|max:50',
+            'questoes.*.pergunta' => 'required|string|max:2000',
+            'questoes.*.subtema' => 'nullable|string|max:255',
+            'questoes.*.resposta_escolhida' => 'nullable|string|max:1000',
+            'questoes.*.resposta_correta' => 'nullable|string|max:1000',
+            'questoes.*.acertou' => 'required|boolean',
+            'questoes.*.referencias' => 'nullable|string|max:500',
         ]);
 
         if ($dadosValidados['acertos'] + $dadosValidados['erros'] !== 10) {
@@ -69,8 +77,8 @@ class TentativasController extends Controller
 
         try {
             $response = Http::timeout(60)
-                ->withHeaders(['X-API-Key' => config('services.python.secret')])
-                ->post(config('services.python.url') . '/quizz', [
+                ->withHeaders(['X-API-Key' => config('services.tutor_ia.secret')])
+                ->post(rtrim(config('services.tutor_ia.url'), '/') . '/quizz', [
                     'texto' => $request->input('tema'),
                 ]);
         } catch (ConnectionException $e) {

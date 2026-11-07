@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TentativaQuizz extends Model
 {
@@ -15,4 +16,9 @@ class TentativaQuizz extends Model
         'acertos',
         'erros'
     ];
+
+    public function respostas(): HasMany
+    {
+        return $this->hasMany(RespostaQuiz::class, 'tentativa_id');
+    }
 }

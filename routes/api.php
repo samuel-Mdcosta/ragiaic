@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\DesempenhoController;
 use App\Http\Controllers\tentativasController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,10 @@ Route::post('/users/login/tentativas', [tentativasController::class, 'registrarT
 Route::post('/users/login/tentativas/perguntas', [tentativasController::class, 'requestPerguntas'])->middleware(['auth:sanctum', 'throttle:perguntas']);
 Route::get('/users/login/tentativas/quantidade', [tentativasController::class, 'quantTentativas'])->middleware('auth:sanctum');
 Route::get('/users/login/tentativas/stats', [tentativasController::class, 'stats'])->middleware('auth:sanctum');
+
+#DesempenhoController
+Route::get('/users/login/desempenho', [DesempenhoController::class, 'desempenho'])->middleware('auth:sanctum');
+Route::get('/users/login/desempenho/feedback', [DesempenhoController::class, 'feedback'])->middleware('auth:sanctum');
 
 #AdminController
 Route::get('/admin/alunos', [AdminController::class, 'listarAlunos'])->middleware('auth:sanctum');

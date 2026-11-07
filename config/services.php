@@ -44,4 +44,12 @@ return [
         'dominio' => env('INSTITUTIONAL_EMAIL_DOMAIN'),
     ],
 
+    // Motor de IA (FastAPI, repositório Iniciacao-Cientifica_Tutor_Virtual-main).
+    // TUTOR_IA_URL tem prioridade; senão usa PYTHON_SERVICE_URL; senão a URL do Render.
+    'tutor_ia' => [
+        'url' => env('TUTOR_IA_URL', env('PYTHON_SERVICE_URL', 'https://iniciacao-cientifica-tutor-virtual-main.onrender.com')),
+        'timeout' => env('TUTOR_IA_TIMEOUT', 90),
+        'secret' => env('PYTHON_SERVICE_SECRET'),
+    ],
+
 ];

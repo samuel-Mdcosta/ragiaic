@@ -61,8 +61,8 @@ class ChatController extends Controller
 
         try {
             $response = Http::timeout(60)
-                ->withHeaders(['X-API-Key' => config('services.python.secret')])
-                ->post(config('services.python.url') . '/llm', [
+                ->withHeaders(['X-API-Key' => config('services.tutor_ia.secret')])
+                ->post(rtrim(config('services.tutor_ia.url'), '/') . '/llm', [
                     'texto' => $request->input('pergunta'),
                 ]);
         } catch (ConnectionException $e) {
