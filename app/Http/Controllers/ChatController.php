@@ -60,9 +60,11 @@ class ChatController extends Controller
         ]);
 
         try {
-            $response = Http::timeout(60)->post('https://iniciacao-cientifica-tutor-virtual-main.onrender.com/llm', [
-                'texto' => $request->input('pergunta'),
-            ]);
+            $response = Http::timeout(60)
+                ->withHeaders(['X-API-Key' => config('services.python.secret')])
+                ->post(config('services.python.url') . '/llm', [
+                    'texto' => $request->input('pergunta'),
+                ]);
         } catch (ConnectionException $e) {
             return response()->json([
                 'message' => 'Não foi possível conectar ao serviço de IA. Tente novamente mais tarde.',

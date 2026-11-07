@@ -23,9 +23,20 @@ class UsuarioController extends Controller
 
     public function cadastro(Request $request)
     {
+        $dominio = config('services.institucional.dominio');
+
         $request->validate([
             'nome'  => 'required|string|min:3',
-            'email' => 'required|email|unique:usuarios',
+            'email' => [
+                'required',
+                'email',
+                'unique:usuarios',
+                function ($attribute, $value, $fail) use ($dominio) {
+                    if ($dominio && !str_ends_with(strtolower($value), '@' . strtolower($dominio))) {
+                        $fail('O cadastro é permitido apenas com e-mail institucional (@' . $dominio . ').');
+                    }
+                },
+            ],
             'senha' => 'required|min:6'
         ]);
 

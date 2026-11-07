@@ -21,9 +21,15 @@ class TentativasController extends Controller
     {
         $dadosValidados = $request->validate([
             'conteudoAcessado' => 'required|string|max:255',
-            'acertos' => 'required|integer',
-            'erros' => 'required|integer',
+            'acertos' => 'required|integer|min:0|max:10',
+            'erros' => 'required|integer|min:0|max:10',
         ]);
+
+        if ($dadosValidados['acertos'] + $dadosValidados['erros'] !== 10) {
+            return response()->json([
+                'message' => 'A soma de acertos e erros deve ser igual a 10.',
+            ], 422);
+        }
 
         $usuarioId = $request->user()->id;
 
@@ -62,9 +68,11 @@ class TentativasController extends Controller
         ]);
 
         try {
-            $response = Http::timeout(60)->post('https://iniciacao-cientifica-tutor-virtual-main.onrender.com/quizz', [
-                'texto' => $request->input('tema'),
-            ]);
+            $response = Http::timeout(60)
+                ->withHeaders(['X-API-Key' => config('services.python.secret')])
+                ->post(config('services.python.url') . '/quizz', [
+                    'texto' => $request->input('tema'),
+                ]);
         } catch (ConnectionException $e) {
             return response()->json([
                 'message' => 'Não foi possível conectar ao serviço de perguntas. Tente novamente mais tarde.',

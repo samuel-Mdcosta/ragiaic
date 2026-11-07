@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    'python' => [
+        'url' => env('PYTHON_SERVICE_URL'),
+        'secret' => env('PYTHON_SERVICE_SECRET'),
+    ],
+
+    'institucional' => [
+        'dominio' => env('INSTITUTIONAL_EMAIL_DOMAIN'),
+    ],
+
 ];

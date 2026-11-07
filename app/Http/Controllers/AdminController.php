@@ -5,11 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Usuario;
 use App\Models\parametroChat;
 use App\Models\TentativaQuizz;
+use App\Providers\SenhaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
+    protected $senhaService;
+
+    public function __construct(SenhaService $senhaService)
+    {
+        $this->senhaService = $senhaService;
+    }
+
     public function listarAlunos(Request $request)
     {
         if ($request->user()->role !== 'admin') {
@@ -98,5 +106,26 @@ class AdminController extends Controller
             'message' => 'Temas do aluno listados com sucesso',
             'dado'    => $dado,
         ]);
+    }
+
+    // Único caminho de redefinição de senha: só o admin, a pedido do monitor.
+    public function redefinirSenhaAluno(Request $request, $id)
+    {
+        if ($request->user()->role !== 'admin') {
+            return response()->json(['message' => 'Acesso negado.'], 403);
+        }
+
+        $dados = $request->validate([
+            'novaSenha' => 'required|min:6',
+        ]);
+
+        $aluno = Usuario::find($id);
+        if (!$aluno) {
+            return response()->json(['message' => 'Aluno não encontrado.'], 404);
+        }
+
+        $this->senhaService->redefinirSenha($aluno, $dados['novaSenha']);
+
+        return response()->json(['message' => 'Senha redefinida com sucesso.']);
     }
 }
