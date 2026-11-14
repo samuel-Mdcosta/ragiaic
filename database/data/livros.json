@@ -1,0 +1,72 @@
+{
+    "_comentario": "Metadados dos livros citados nas referências das questões (título, autor, edição, editora e ano), extraídos dos arquivos do pipeline de geração (approved_questions.json). A importação (php artisan questoes:importar) completa cada referência com estes dados e com eles monta as citações mostradas ao aluno. A chave é o nome do arquivo do livro; a comparação ignora '.pdf', o prefixo 'Livro ', acentos, '_' e maiúsculas.",
+    "livros": {
+        "Compêndio de Psiquiatria.pdf": {
+            "titulo": "Compêndio de Psiquiatria: Ciência do Comportamento e Psiquiatria Clínica",
+            "autor": "Benjamin James Sadock; Virginia Alcott Sadock e Pedro Ruiz",
+            "edicao": 11,
+            "editora": "Artmed",
+            "publicacao": 2017
+        },
+        "Fisiologia Humana Uma Abordagem Integrada.pdf": {
+            "titulo": "Fisiologia Humana: Uma Abordagem Integrada",
+            "autor": "Dee Unglaub Silverthorn",
+            "edicao": 7,
+            "editora": "Artmed",
+            "publicacao": 2017
+        },
+        "Livro Cem bilhoes de neuronios Roberto Lent.pdf": {
+            "titulo": "Cem Bilhões de Neurônios?: Conceitos Fundamentais de Neurociência",
+            "autor": "Roberto Lent",
+            "edicao": 2,
+            "editora": "Atheneu",
+            "publicacao": 2010
+        },
+        "Livro Histologia Basica Junqueira.pdf": {
+            "titulo": "Histologia Básica",
+            "autor": "Luiz C. Junqueira e José Carneiro",
+            "edicao": 10,
+            "editora": "Guanabara Koogan",
+            "publicacao": 2004
+        },
+        "Livro Principios de Anatomia e Fisiologia Tortora.pdf": {
+            "titulo": "Princípios de Anatomia e Fisiologia",
+            "autor": "Gerard J. Tortora e Bryan Derrickson",
+            "edicao": 14,
+            "editora": "Guanabara Koogan",
+            "publicacao": 2016
+        },
+        "Neuroanatomia Funcional.pdf": {
+            "titulo": "Neuroanatomia Funcional",
+            "autor": "Angelo Machado",
+            "edicao": 4,
+            "editora": "Atheneu",
+            "publicacao": 2021
+        },
+        "Neurociencias Desvendando o Sistema Nervoso.pdf": {
+            "titulo": "Neurociências: Desvendando o Sistema Nervoso",
+            "autor": "Mark F. Bear; Barry W. Connors e Michael A. Paradiso",
+            "edicao": 4,
+            "editora": "Artmed",
+            "publicacao": 2017
+        },
+        "Principios De Neurociencias.pdf": {
+            "titulo": "Princípios de Neurociências",
+            "autor": "Eric R. Kandel; James H. Schwartz; Thomas M. Jessell; Steven A. Siegelbaum; A. J. Hudspeth",
+            "edicao": 5,
+            "editora": "Artmed / McGraw Hill Education",
+            "publicacao": 2014
+        },
+        "Tratado de Fisiologia Medica.pdf": {
+            "titulo": "Tratado de Fisiologia Médica",
+            "autor": "John E. Hall e Michael E. Hall",
+            "edicao": 14,
+            "editora": "Guanabara Koogan",
+            "publicacao": 2021
+        }
+    },
+    "_comentario_equivalentes": "Nomes de arquivo diferentes para o MESMO livro (confirmado pelo responsável pelo projeto). A referência passa a usar o nome do arquivo de destino e ganha os metadados dele, para o livro contar como um só nas citações.",
+    "equivalentes": {
+        "Livro Fisiologia Humana  Silverthorn.pdf": "Fisiologia Humana Uma Abordagem Integrada.pdf"
+    }
+}

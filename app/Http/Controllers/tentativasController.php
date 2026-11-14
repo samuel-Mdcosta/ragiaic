@@ -3,10 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Providers\TentativaService;
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Validation\Rule;
 
 class TentativasController extends Controller
 {
@@ -67,32 +64,5 @@ class TentativasController extends Controller
         $stats = $this->tentativaService->calcularStats($usuarioId);
 
         return response()->json($stats);
-    }
-
-    public function requestPerguntas(Request $request)
-    {
-        $request->validate([
-            'tema' => ['required', 'string', Rule::in(config('temas.quiz'))],
-        ]);
-
-        try {
-            $response = Http::timeout(60)
-                ->withHeaders(['X-API-Key' => config('services.tutor_ia.secret')])
-                ->post(rtrim(config('services.tutor_ia.url'), '/') . '/quizz', [
-                    'texto' => $request->input('tema'),
-                ]);
-        } catch (ConnectionException $e) {
-            return response()->json([
-                'message' => 'Não foi possível conectar ao serviço de perguntas. Tente novamente mais tarde.',
-            ], 503);
-        }
-
-        if ($response->failed()) {
-            return response()->json([
-                'message' => 'Erro ao obter perguntas. Tente novamente mais tarde.',
-            ], 500);
-        }
-
-        return response()->json($response->json());
     }
 }

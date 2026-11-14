@@ -16,9 +16,9 @@ class DesempenhoFeedbackTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const HIPOCAMPO = 'Hipocampo e Sistema Límbico';
-    private const MEMORIA = 'Memória e Aprendizagem';
-    private const LINGUAGEM = 'Linguagem, Leitura e Escrita';
+    private const HIPOCAMPO = 'Hipocampo e memória espacial';
+    private const MEMORIA = 'Sistemas e processos da memória';
+    private const LINGUAGEM = 'Hemisférios cerebrais e linguagem';
     private const URL_MOTOR = 'http://motor-ia.test';
     private const SEGREDO_MOTOR = 'segredo-de-teste';
 
@@ -147,7 +147,7 @@ class DesempenhoFeedbackTest extends TestCase
 
         $this->assertSame(40, $resposta->json('questoes_respondidas'));
         $this->assertEquals(57.5, $resposta->json('taxa_acerto'));
-        $this->assertCount(7, $resposta->json('temas_nao_praticados'));
+        $this->assertCount(count(config('temas.quiz')) - 3, $resposta->json('temas_nao_praticados'));
         $this->assertNotContains(self::HIPOCAMPO, $resposta->json('temas_nao_praticados'));
     }
 

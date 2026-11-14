@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DesempenhoController;
+use App\Http\Controllers\QuizController;
 use App\Http\Controllers\tentativasController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,9 +25,13 @@ Route::post('/users/logout', [UsuarioController::class, 'logout'])->middleware('
 
 #tentativasController
 Route::post('/users/login/tentativas', [tentativasController::class, 'registrarTentativa'])->middleware('auth:sanctum');
-Route::post('/users/login/tentativas/perguntas', [tentativasController::class, 'requestPerguntas'])->middleware(['auth:sanctum', 'throttle:perguntas']);
 Route::get('/users/login/tentativas/quantidade', [tentativasController::class, 'quantTentativas'])->middleware('auth:sanctum');
 Route::get('/users/login/tentativas/stats', [tentativasController::class, 'stats'])->middleware('auth:sanctum');
+
+#QuizController: quiz com o banco de questões (sorteio sem gabarito; a tentativa é registrada ao concluir)
+Route::post('/users/login/tentativas/perguntas', [QuizController::class, 'iniciar'])->middleware(['auth:sanctum', 'throttle:perguntas']);
+Route::post('/users/login/quiz/{quiz}/responder', [QuizController::class, 'responder'])->whereNumber('quiz')->middleware('auth:sanctum');
+Route::get('/users/login/quiz/{quiz}/gabarito', [QuizController::class, 'gabarito'])->whereNumber('quiz')->middleware('auth:sanctum');
 
 #DesempenhoController
 Route::get('/users/login/desempenho', [DesempenhoController::class, 'desempenho'])->middleware('auth:sanctum');
