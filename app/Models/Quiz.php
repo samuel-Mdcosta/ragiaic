@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Um quiz sorteado para um aluno. Concluído quando todas as questões têm resposta.
@@ -35,6 +36,11 @@ class Quiz extends Model
     public function tentativa(): BelongsTo
     {
         return $this->belongsTo(TentativaQuizz::class, 'tentativa_id');
+    }
+
+    public function avaliacao(): HasOne
+    {
+        return $this->hasOne(AvaliacaoQuiz::class, 'quiz_id');
     }
 
     public function comFeedback(): bool

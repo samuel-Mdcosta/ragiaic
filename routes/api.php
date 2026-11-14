@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AvaliacaoQuizController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DesempenhoController;
 use App\Http\Controllers\QuizController;
@@ -32,6 +33,10 @@ Route::get('/users/login/tentativas/stats', [tentativasController::class, 'stats
 Route::post('/users/login/tentativas/perguntas', [QuizController::class, 'iniciar'])->middleware(['auth:sanctum', 'throttle:perguntas']);
 Route::post('/users/login/quiz/{quiz}/responder', [QuizController::class, 'responder'])->whereNumber('quiz')->middleware('auth:sanctum');
 Route::get('/users/login/quiz/{quiz}/gabarito', [QuizController::class, 'gabarito'])->whereNumber('quiz')->middleware('auth:sanctum');
+
+#AvaliacaoQuizController: avaliação de satisfação ao concluir o quiz (obrigatória para ver o resultado e o feedback)
+Route::get('/users/login/avaliacao/questionario', [AvaliacaoQuizController::class, 'questionario'])->middleware('auth:sanctum');
+Route::post('/users/login/quiz/{quiz}/avaliacao', [AvaliacaoQuizController::class, 'avaliar'])->whereNumber('quiz')->middleware('auth:sanctum');
 
 #DesempenhoController
 Route::get('/users/login/desempenho', [DesempenhoController::class, 'desempenho'])->middleware('auth:sanctum');

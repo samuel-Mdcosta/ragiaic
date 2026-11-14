@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Quiz;
+use App\Providers\AvaliacaoQuizService;
 use App\Providers\QuizService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -12,8 +13,10 @@ use Illuminate\Validation\Rule;
  */
 class QuizController extends Controller
 {
-    public function __construct(protected QuizService $quizService)
-    {
+    public function __construct(
+        protected QuizService $quizService,
+        protected AvaliacaoQuizService $avaliacaoService,
+    ) {
     }
 
     public function iniciar(Request $request)
@@ -47,7 +50,17 @@ class QuizController extends Controller
 
     public function gabarito(Request $request, int $quiz)
     {
-        return response()->json($this->quizService->gabarito($this->quizDoUsuario($request, $quiz)));
+        $quiz = $this->quizDoUsuario($request, $quiz);
+
+        // Quiz concluído: o resultado só sai depois da avaliação de satisfação.
+        if ($this->avaliacaoService->resultadoBloqueado($quiz)) {
+            return response()->json([
+                'message'            => 'Avalie o quiz para ver o resultado e o feedback.',
+                'avaliacao_pendente' => true,
+            ], 403);
+        }
+
+        return response()->json($this->quizService->gabarito($quiz));
     }
 
     private function quizDoUsuario(Request $request, int $id): Quiz

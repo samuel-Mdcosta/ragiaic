@@ -87,7 +87,14 @@ All protected routes require: `Authorization: Bearer {token}`
 | POST | `/api/users/login/quiz/{quiz}/responder` | Yes | Body `{ questao_id, indice (0-3) }`. Records the student's **initial** answer (it never changes; sending again returns `ja_respondida: true`). In `com_feedback` mode the response then includes `feedback` (`correta`, `acertou`, `explicacao`, `explicacoes_alternativas`, `fontes`). Answering the last question completes the quiz and records the attempt (`quiz_finalizado: true`) |
 | GET | `/api/users/login/quiz/{quiz}/gabarito` | Yes | Answer key with justifications and full bibliographic references, only for the questions already answered |
 
-Only the quiz owner can answer or read the answer key (404 otherwise).
+Only the quiz owner can answer or read the answer key (404 otherwise). For a **completed** quiz, the answer key is only released after the satisfaction survey (403 with `avaliacao_pendente: true` before it).
+
+### Satisfaction survey — `AvaliacaoQuizController`
+
+| Method | Route | Auth | Description |
+|--------|-------|------|-------------|
+| GET | `/api/users/login/avaliacao/questionario` | Yes | The questionnaire from `config/avaliacao.php`: `{ versao, escala: { min, max, rotulo_min, rotulo_max }, perguntas: [{ chave, texto }], comentario: { texto, max } }` |
+| POST | `/api/users/login/quiz/{quiz}/avaliacao` | Yes | Body `{ notas: { <chave>: 0-5, ... }, comentario? }`. Every rating is required (0 = very bad, 5 = excellent); the comment is optional. Only for a completed quiz of the student (422/404 otherwise). The first evaluation counts: sending again returns `ja_avaliado: true` and changes nothing |
 
 ### Attempts — `tentativasController`
 
@@ -245,6 +252,51 @@ php artisan questoes:importar --status=revisada
 
 Deploy the backend (and run the import) before the front: the new front relies on `quiz_id` and the `/quiz/{quiz}/...` routes.
 
+---
+
+## Satisfaction survey
+
+When a quiz is completed, the student must rate it before seeing the result: one rating from 0 (very bad) to 5 (excellent) per question, all required, plus an optional comment. Only then the result (answer key with justifications) and the tutor's analysis are released. The rule is enforced by the backend, not only by the front:
+
+- `GET /quiz/{quiz}/gabarito` returns 403 (`avaliacao_pendente: true`) for a completed quiz without an evaluation.
+- `GET /desempenho/feedback` returns `status: "avaliacao_pendente"` (with `avaliacao.quiz_id` and `avaliacao.tema`), **without calling the AI**, while the student's latest completed quiz has no evaluation. The "Meu Desempenho" page then shows the survey in place of the analysis, so a student who closed the tab still has to evaluate before seeing it.
+
+### Changing the questions
+
+The questions in `config/avaliacao.php` are **examples** (still to be defined). The front builds the form from the API, so only this file changes:
+
+- Edit `perguntas` (`chave` + `texto`) and the optional `comentario` text, and **bump `versao`**.
+- Never reuse a `chave` for a different question. Each answer stores the questionnaire version and the question text as it was when answered.
+
+### Analyzing the answers
+
+Tables: `avaliacoes_quiz` (one per quiz: `quiz_id`, `usuario_id`, `versao_questionario`, `comentario`) and `avaliacoes_quiz_notas` (one row per rating: `pergunta`, `texto`, `nota`). Join with `quizzes` (theme, mode) and `parametros_quiz` (score) for context:
+
+```sql
+-- Average and number of answers per question
+SELECT n.pergunta, n.texto, round(avg(n.nota), 2) AS media, count(*) AS respostas
+FROM avaliacoes_quiz_notas n JOIN avaliacoes_quiz a ON a.id = n.avaliacao_id
+WHERE a.versao_questionario = 'exemplo-1'
+GROUP BY n.pergunta, n.texto ORDER BY media;
+
+-- Distribution of the ratings (0-5) per question
+SELECT pergunta, nota, count(*) AS respostas FROM avaliacoes_quiz_notas GROUP BY pergunta, nota ORDER BY pergunta, nota;
+
+-- Average per theme and mode
+SELECT q.tema, q.modo, round(avg(n.nota), 2) AS media, count(DISTINCT a.id) AS avaliacoes
+FROM avaliacoes_quiz a
+JOIN quizzes q ON q.id = a.quiz_id
+JOIN avaliacoes_quiz_notas n ON n.avaliacao_id = a.id
+GROUP BY q.tema, q.modo ORDER BY media;
+
+-- Comments, with the theme and the student's score in that quiz
+SELECT a.created_at, q.tema, t.acertos, t.erros, a.comentario
+FROM avaliacoes_quiz a
+JOIN quizzes q ON q.id = a.quiz_id
+LEFT JOIN parametros_quiz t ON t.id = q.tentativa_id
+WHERE a.comentario IS NOT NULL ORDER BY a.created_at DESC;
+```
+
 ### Build frontend assets
 
 ```bash
@@ -305,6 +357,12 @@ quizzes
 
 quiz_questoes
   id, quiz_id → quizzes, questao_id → questoes, ordem, letra_escolhida, acertou, respondida_em
+
+avaliacoes_quiz
+  id, quiz_id → quizzes (unique), usuario_id → usuarios, versao_questionario, comentario
+
+avaliacoes_quiz_notas
+  id, avaliacao_id → avaliacoes_quiz, pergunta (question key), texto (question text when answered), nota (0-5)
 
 personal_access_tokens
   (standard Laravel Sanctum table)

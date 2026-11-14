@@ -15,8 +15,10 @@ use Illuminate\Support\Facades\Log;
  */
 class FeedbackDesempenhoService
 {
-    public function __construct(private DesempenhoService $desempenhoService)
-    {
+    public function __construct(
+        private DesempenhoService $desempenhoService,
+        private AvaliacaoQuizService $avaliacaoService,
+    ) {
     }
 
     /**
@@ -25,6 +27,23 @@ class FeedbackDesempenhoService
     public function obterFeedback(int $usuarioId): array
     {
         $totalTentativas = TentativaQuizz::where('usuario_id', $usuarioId)->count();
+
+        // O feedback só sai depois que o aluno avalia o último quiz que concluiu (sem chamar a IA antes disso).
+        $pendente = $this->avaliacaoService->pendente($usuarioId);
+        if ($pendente !== null) {
+            return [
+                'status'           => 'avaliacao_pendente',
+                'feedback'         => null,
+                'avaliacao'        => [
+                    'quiz_id'       => $pendente->id,
+                    'tema'          => $pendente->tema,
+                    'finalizado_em' => $pendente->finalizado_em->toIso8601String(),
+                ],
+                'total_tentativas' => $totalTentativas,
+                'gerado_em'        => null,
+                'em_cache'         => false,
+            ];
+        }
 
         $ultimo = FeedbackDesempenho::where('usuario_id', $usuarioId)->orderByDesc('id')->first();
         if ($ultimo && $ultimo->total_tentativas === $totalTentativas) {
